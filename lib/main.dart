@@ -13,7 +13,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  String url = 'https://run.mocky.io/v3/ba4bbc49-5cc2-4792-ba11-f82f2c6b3df7';
+  final String url = 'https://run.mocky.io/v3/ba4bbc49-5cc2-4792-ba11-f82f2c6b3df7';
+
   Future<List<Users>?> _service() async {
     try {
       final response = await Dio().get(url);
@@ -34,46 +35,49 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    const String _materialTitle = 'Flutter API Service to Models';
+    const String _appBarTitle = 'Users';
+    const String _noData = 'No Data';
+
     return MaterialApp(
-      title: 'Material App',
+      title: _materialTitle,
+      theme: ThemeData.light().copyWith(
+          appBarTheme: AppBarTheme(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        titleTextStyle: Theme.of(context).textTheme.headline5,
+        centerTitle: true,
+      )),
       home: Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            title: const Text(
-              'Kullanıcılar',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-            centerTitle: true,
-          ),
-          body: FutureBuilder(
-            future: _service(),
-            builder: (context, AsyncSnapshot<List<Users>?> snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.done:
+        appBar: AppBar(title: const Text(_appBarTitle)),
+        body: FutureBuilder(
+          future: _service(),
+          builder: (context, AsyncSnapshot<List<Users>?> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.done:
+                if (snapshot.data != null) {
                   return ListView.builder(
                     itemCount: snapshot.data?.length,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              snapshot.data?[index].avatar ?? 'No Data'),
+                          backgroundImage: NetworkImage(snapshot.data?[index].avatar ?? _noData),
                         ),
-                        title: Text(
-                            '${snapshot.data?[index].firstName} ${snapshot.data?[index].lastName}'),
-                        subtitle:
-                            Text(snapshot.data?[index].email ?? 'No Data'),
+                        title: Text('${snapshot.data?[index].firstName} ${snapshot.data?[index].lastName}'),
+                        subtitle: Text(snapshot.data?[index].email ?? _noData),
                       );
                     },
                   );
-                default:
-                  return const Center(child: CircularProgressIndicator());
-              }
-            },
-          )),
+                } else {
+                  return const Center(child: Text(_noData));
+                }
+              default:
+                return const Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
+      ),
     );
   }
 }
