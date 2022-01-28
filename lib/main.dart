@@ -15,12 +15,12 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final String url = 'https://run.mocky.io/v3/ba4bbc49-5cc2-4792-ba11-f82f2c6b3df7';
 
-  Future<List<Users>?> _service() async {
+  Future<List<User>?> _service() async {
     try {
       final response = await Dio().get(url);
       final data = response.data;
       if (data is List) {
-        return data.map((element) => Users.fromJson(element)).toList();
+        return data.map((element) => User.fromJson(element)).toList();
       }
     } catch (e) {
       Exception(e);
@@ -52,7 +52,7 @@ class _MainPageState extends State<MainPage> {
         appBar: AppBar(title: const Text(_appBarTitle)),
         body: FutureBuilder(
           future: _service(),
-          builder: (context, AsyncSnapshot<List<Users>?> snapshot) {
+          builder: (context, AsyncSnapshot<List<User>?> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.done:
                 if (snapshot.data != null) {
